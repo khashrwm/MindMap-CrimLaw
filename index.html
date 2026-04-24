@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criminal Law Flashcards — Prof. Robbins</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  /* ── MENU ── */
+  .menu-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(139,92,246,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(236,72,153,0.06) 0%, transparent 50%),
+                #0d1117;
+  }
+
+  .menu-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #ec4899;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .menu-title {
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 700;
+    color: #f0f6fc;
+    line-height: 1.05;
+    margin-bottom: 6px;
+  }
+
+  .menu-sub {
+    font-size: 20px;
+    color: #8b949e;
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 48px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 20px 28px;
+    text-align: center;
+    min-width: 110px;
+  }
+
+  .stat-num {
+    font-size: 34px;
+    font-weight: 700;
+    color: #ec4899;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── SETTINGS ── */
+  .settings-screen {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: #0d1117;
+  }
+
+  .settings-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .settings-title {
+    font-size: 28px;
+    color: #f0f6fc;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .top-btns {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .top-btn {
+    background: rgba(236,72,153,0.12);
+    color: #ec4899;
+    border: 1px solid rgba(236,72,153,0.3);
+    border-radius: 6px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .top-btn.clear {
+    background: rgba(255,255,255,0.03);
+    color: #8b949e;
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .cat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .cat-chip {
+    border-radius: 20px;
+    padding: 7px 15px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: #6e7681;
+    transition: all 0.2s;
+  }
+
+  .cat-chip.active {
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .mode-section {
+    margin-bottom: 28px;
+  }
+
+  .mode-label {
+    color: #8b949e;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .mode-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .mode-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #8b949e;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    transition: all 0.2s;
+  }
+
+  .mode-btn.active {
+    background: rgba(236,72,153,0.15);
+    border-color: #ec4899;
+    color: #ec4899;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .btn-back {
+    background: rgba(255,255,255,0.03);
+    color: #8b949e;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px 28px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .btn-start {
+    background: #ec4899;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    flex: 1;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-start:disabled {
+    background: #333;
+    cursor: not-allowed;
+  }
+
+  /* ── FLASHCARD GAME ── */
+  .game-screen {
+    min-height: 100vh;
+    padding: 20px 16px;
+    background: #0d1117;
+  }
+
+  .game-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .cat-badge {
+    border-radius: 12px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #fff;
+  }
+
+  .game-stats {
+    color: #8b949e;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    gap: 14px;
+  }
+
+  .progress-bar {
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    height: 3px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: #ec4899;
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .q-number {
+    color: #6e7681;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 8px;
+  }
+
+  /* ── THE CARD ── */
+  .flashcard {
+    perspective: 1000px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    min-height: 220px;
+  }
+
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .flashcard-inner.flipped {
+    transform: rotateX(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    min-height: 220px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-front {
+    background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .card-front-question {
+    font-size: 21px;
+    line-height: 1.5;
+    color: #f0f6fc;
+    font-weight: 400;
+  }
+
+  .card-front-hint {
+    margin-top: 20px;
+    color: #6e7681;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+  }
+
+  .card-back {
+    background: linear-gradient(145deg, rgba(236,72,153,0.06) 0%, rgba(139,92,246,0.04) 100%);
+    border: 1px solid rgba(236,72,153,0.15);
+    transform: rotateX(180deg);
+  }
+
+  .card-back-answer {
+    font-size: 18px;
+    line-height: 1.55;
+    color: #ec4899;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .card-back-explanation {
+    font-size: 15px;
+    line-height: 1.55;
+    color: #8b949e;
+    font-style: italic;
+  }
+
+  /* ── SELF-GRADE BUTTONS ── */
+  .grade-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .grade-btn {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 0;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    transition: transform 0.15s;
+  }
+
+  .grade-btn:active { transform: scale(0.97); }
+
+  .grade-btn.got-it {
+    background: rgba(34,197,94,0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34,197,94,0.25);
+  }
+
+  .grade-btn.missed {
+    background: rgba(239,68,68,0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  .grade-btn.skip {
+    background: rgba(255,255,255,0.03);
+    color: #6e7681;
+    border: 1px solid rgba(255,255,255,0.06);
+    flex: 0.6;
+  }
+
+  /* ── RESULTS ── */
+  .results-screen {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: #0d1117;
+  }
+
+  .results-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .results-title {
+    font-size: 32px;
+    color: #f0f6fc;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .results-stats {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .result-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 24px 28px;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .result-num {
+    font-size: 42px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .result-label {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .missed-section {
+    margin-bottom: 32px;
+  }
+
+  .missed-title {
+    color: #ef4444;
+    font-size: 18px;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .missed-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  .missed-q {
+    color: #e6edf3;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .missed-a {
+    color: #22c55e;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .missed-exp {
+    color: #8b949e;
+    font-size: 12px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .results-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .hidden { display: none !important; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.35s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ════════ MENU ════════ -->
+<div id="menuScreen" class="menu-screen">
+  <div class="menu-label">Professor Robbins — Spring 2026</div>
+  <div class="menu-title">Criminal Law</div>
+  <div class="menu-sub">Flashcard Review</div>
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-num" id="totalCount">0</div>
+      <div class="stat-label">Cards</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="topicCount">0</div>
+      <div class="stat-label">Topics</div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="showScreen('settings')" style="width:auto;padding:16px 56px;font-size:18px;">Start Review</button>
+  <div style="margin-top:20px;color:#6e7681;font-size:13px;font-family:'JetBrains Mono',monospace;">Closed-book exam prep — tap to reveal, self-grade</div>
+</div>
+
+<!-- ════════ SETTINGS ════════ -->
+<div id="settingsScreen" class="settings-screen hidden">
+  <div class="settings-inner">
+    <div class="settings-title">Choose Topics</div>
+    <div class="top-btns">
+      <button class="top-btn" onclick="selectAllCats()">Select All</button>
+      <button class="top-btn clear" onclick="selectNoCats()">Clear</button>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+
+    <div class="mode-section">
+      <div class="mode-label">Order</div>
+      <div class="mode-btns">
+        <button class="mode-btn active" id="modeShuf" onclick="setMode('shuffle')">Shuffle</button>
+        <button class="mode-btn" id="modeSeq" onclick="setMode('sequential')">In Order</button>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-back" onclick="showScreen('menu')">Back</button>
+      <button class="btn-start" id="startBtn" onclick="startGame()">Start</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ GAME ════════ -->
+<div id="gameScreen" class="game-screen hidden">
+  <div class="game-inner">
+    <div class="game-header">
+      <span class="cat-badge" id="gameCatBadge"></span>
+      <div class="game-stats">
+        <span id="gameScore"></span>
+        <span id="gameTimer">0:00</span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="q-number" id="qNumber"></div>
+
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="flashcard-inner" id="flashcardInner">
+        <div class="card-front">
+          <div class="card-front-question" id="cardQuestion"></div>
+          <div class="card-front-hint">tap to reveal answer</div>
+        </div>
+        <div class="card-back">
+          <div class="card-back-answer" id="cardAnswer"></div>
+          <div class="card-back-explanation" id="cardExplanation"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gradeRow" class="grade-row hidden">
+      <button class="grade-btn got-it" onclick="gradeCard('got')">Got It ✓</button>
+      <button class="grade-btn missed" onclick="gradeCard('missed')">Missed ✗</button>
+      <button class="grade-btn skip" onclick="gradeCard('skip')">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ RESULTS ════════ -->
+<div id="resultsScreen" class="results-screen hidden">
+  <div class="results-inner">
+    <div class="results-title">Session Complete</div>
+    <div class="results-stats" id="resultsStats"></div>
+    <div class="missed-section" id="missedSection"></div>
+    <div class="results-actions">
+      <button class="btn-back" onclick="showScreen('menu')">Menu</button>
+      <button class="btn-start" onclick="reviewMissed()" id="reviewMissedBtn" style="flex:none;padding:14px 28px;">Review Missed</button>
+      <button class="btn-start" onclick="startGame()" style="flex:none;padding:14px 28px;">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// FLASHCARD DATA
+// ═══════════════════════════════════════════════════════════════
+const cards = [
+  // ── FOUNDATIONS ──
+  { cat: "Foundations", q: "What is the burden of proof in criminal cases?", a: "Beyond a reasonable doubt.", exp: "Civil = preponderance (>50%). Criminal = beyond a reasonable doubt (highest standard)." },
+  { cat: "Foundations", q: "In Regina v. Dudley and Stephens (1884), what defense was rejected for murder?", a: "Necessity.", exp: "Necessity does not justify murder unless the killing was in self-defense. Cannot kill an innocent bystander out of necessity." },
+  { cat: "Foundations", q: "What did Lawrence v. Texas (2003) hold?", a: "The Texas statute criminalizing same-sex conduct is unconstitutional. Bowers v. Hardwick overruled.", exp: "The State cannot use criminal law to enforce a particular moral code on the whole of society. Liberty protects personal autonomy." },
+  { cat: "Foundations", q: "Name the six theories of punishment.", a: "Retribution, Rehabilitation, Restraint (incapacitation), General Deterrence, Specific Deterrence, Public Education.", exp: "Retribution = desert. Rehabilitation = correction. Restraint = remove dangerous people. Gen. Deterrence = example for public. Spec. Deterrence = example for this person." },
+  { cat: "Foundations", q: "In criminal cases, who does the prosecutor represent?", a: "The state (not the victim).", exp: "Criminal law is public law. The prosecutor represents the people/state, not the individual victim." },
+
+  // ── ACTUS REUS ──
+  { cat: "Actus Reus", q: "What was the holding in Martin v. State (1944)?", a: "No actus reus. A person placed involuntarily in a situation cannot be convicted.", exp: "Police arrested Martin at home and took him to the highway. His public presence was involuntary. Statute words 'appears' and 'manifest' imply voluntariness." },
+  { cat: "Actus Reus", q: "How does People v. Newton (1970) differ from Martin regarding involuntariness?", a: "Martin = external involuntariness (police). Newton = internal involuntariness (reflex/unconsciousness from gunshot).", exp: "Both negate actus reus, but through different mechanisms. Newton required medical expert testimony." },
+  { cat: "Actus Reus", q: "What are the four sources of legal duty for omission liability (Jones v. United States)?", a: "1) Statute-imposed duty, 2) Status relationship, 3) Contractual duty, 4) Voluntarily assumed care + seclusion from others.", exp: "Without one of these four duties, failure to act is not criminal. Moral obligation alone is insufficient." },
+  { cat: "Actus Reus", q: "State the actus reus framework.", a: "Act? → Voluntary? → If no act, culpable omission? → Legal duty? → If no AR → no crime.", exp: "Both an act AND voluntariness are required. If there is no act, check for a culpable omission with a legal duty." },
+
+  // ── MENS REA ──
+  { cat: "Mens Rea", q: "What does 'maliciously' require under Regina v. Cunningham (1957)?", a: "Either (1) actual intention to cause that type of harm, OR (2) recklessness (foresight that harm might occur).", exp: "Trial judge wrongly equated 'maliciously' with 'unlawfully.' Conviction reversed. Malice ≠ mere unlawfulness." },
+  { cat: "Mens Rea", q: "What did Regina v. Faulkner (1877) establish?", a: "Committing one crime (theft) does NOT automatically supply mens rea for a different crime (arson).", exp: "Sailor stole rum, lit match, burned ship. Conviction quashed—stealing doesn't make you guilty of arson." },
+  { cat: "Mens Rea", q: "List the four MPC mental states in order from most to least culpable.", a: "Purposely → Knowingly → Recklessly → Negligently.", exp: "Recklessly is the default if statute is silent. Purpose/Knowledge = specific intent. Recklessness/Negligence = general intent." },
+  { cat: "Mens Rea", q: "What is the default mens rea under the MPC when a statute is silent?", a: "Recklessly—conscious disregard of a substantial and unjustifiable risk.", exp: "This is the MPC's default rule when the legislature doesn't specify a mental state." },
+  { cat: "Mens Rea", q: "How do prosecutors prove mens rea?", a: "Indirectly through circumstantial evidence. 'A person of sound mind is presumed to intend the natural and probable consequences of his acts.'", exp: "Mandatory presumptions limited (Francis v. Franklin). Permissive inferences allowed (Barnes v. United States)." },
+
+  // ── MISTAKES ──
+  { cat: "Mistakes", q: "State the mistake defense framework: when does an unreasonable mistake work?", a: "Unreasonable mistake: defense ONLY for specific intent. Reasonable mistake: defense for specific AND general intent. Neither works for strict liability.", exp: "This chart is critical for the exam. Strict liability = no mistake defense ever." },
+  { cat: "Mistakes", q: "What is the Moral Wrong Principle (Regina v. Prince)?", a: "A mistake defense fails if D's conduct was immoral even under the facts as he believed them to be.", exp: "Prince took a girl he thought was 18 from her father. Even if she were 18, taking her was morally wrong—he acted at his own peril." },
+  { cat: "Mistakes", q: "What is the Lesser Crime Principle?", a: "A mistake defense fails if, had the facts been as D believed, he would still have been committing a lesser crime.", exp: "Takes into account whether D knew he was committing crime A, even if the actual crime was the greater crime B." },
+  { cat: "Mistakes", q: "Is consent a mistake of fact or legal status?", a: "Legal status. A fact is something you can tell with your five senses. Consent, ownership, and validity are questions of legal status.", exp: "This distinction from class is exam-critical. Prof. Robbins emphasized: don't call consent a 'mistake of fact.'" },
+  { cat: "Mistakes", q: "What did Commonwealth v. Sherry (1982) hold about mistaken belief in consent for rape?", a: "A defendant's mistaken belief that the victim consented is NOT a defense to rape. Courts look at the objective view of the facts.", exp: "A man's actual knowledge is legally irrelevant. No social utility in letting the 'more aggressive player' define consent." },
+  { cat: "Mistakes", q: "What is the Lambert v. California (1957) exception for mistake of law?", a: "Good defense ONLY if: (1) crime of omission, AND (2) reasonable person would not have been put on notice.", exp: "Due Process requires notice. Lambert failed to register as a felon—wholly passive conduct with no alert to a reasonable person." },
+  { cat: "Mistakes", q: "Distinguish robbery from burglary.", a: "Robbery: larceny by force/fear against a PERSON (specific intent). Burglary: breaking & entering property of another with intent to commit crime inside.", exp: "'Help I've been robbed!' → No, you've been burglarized. Robbery requires force against a person." },
+
+  // ── STRICT LIABILITY ──
+  { cat: "Strict Liability", q: "What did Morissette v. United States (1952) hold?", a: "For common law crimes (larceny/conversion), mens rea is inherent even if Congress omits it. Statutory silence ≠ strict liability.", exp: "Junk dealer collected spent bomb casings believing them abandoned. Reversed—'knowingly converting' requires intent for traditional crimes." },
+  { cat: "Strict Liability", q: "What does the MPC do with strict liability offenses?", a: "Reduces them to 'violations' (not 'crimes'). Fines only—no imprisonment.", exp: "MPC prohibits using imprisonment for strict liability. Punishment limited to fines, civil penalties, or forfeitures." },
+  { cat: "Strict Liability", q: "What three factors help determine if a statute imposes strict liability?", a: "1) Words of the statute, 2) Legislative history, 3) Maximum penalty (fine only → more likely SL).", exp: "Judge Hand: 'Never take the words of a statute at face value.' If max penalty is only a fine → more likely SL." },
+
+  // ── LEGALITY ──
+  { cat: "Legality", q: "What does 'nulla poena sine lege' mean?", a: "No punishment without law. Bars retroactivity and vagueness, ensures fair warning, controls discretion.", exp: "Core legality principle. Related: Ex Post Facto bars increasing penalties retroactively." },
+  { cat: "Legality", q: "Why was the ordinance in Papachristou v. City of Jacksonville (1972) unconstitutional?", a: "Unconstitutionally vague—lacked clear standards. Not governance by 'moment-to-moment opinions of a policeman.'", exp: "Notice is not enough—there must be clear standards for how a person can violate the law." },
+  { cat: "Legality", q: "If a crime's penalty is reduced AFTER you are sentenced, does your sentence decrease?", a: "No. Ex Post Facto bars increasing penalties retroactively, but a later reduction does NOT automatically reduce your sentence.", exp: "One-way protection: you can't be punished more, but you don't automatically benefit from later leniency." },
+
+  // ── PROPORTIONALITY ──
+  { cat: "Legality", q: "Name the key Eighth Amendment proportionality cases.", a: "Coker (death for rape—no), Atkins (death for ID—no), Roper (death for juveniles—no), Miller (mandatory LWOP for juveniles—no), Kennedy (death for child rape—no).", exp: "Rummel v. Estelle: three-strikes life sentence for minor crimes was NOT grossly disproportionate—outer limits." },
+
+  // ── HOMICIDE ──
+  { cat: "Homicide", q: "State the PA test for first-degree murder (Commonwealth v. Carroll).", a: "Premeditation can be formed moments before the act. Seconds are enough.", exp: "Carroll's own statement showed he remembered the gun, took it, shot her. Criticism: collapses 1st and 2nd degree." },
+  { cat: "Homicide", q: "State the CA test for first-degree murder (People v. Anderson).", a: "California looks for three factors: (1) Planning, (2) Motive, (3) Manner of killing. Strong planning alone can suffice.", exp: "~60 wounds on a child = 'explosion of violence' = 2nd degree, not 1st. Person-oriented test favors defendants." },
+  { cat: "Homicide", q: "What are the three routes to second-degree murder?", a: "1) Intent to kill WITHOUT P&D, 2) Extreme recklessness (conscious disregard + disregard for human life), 3) Intent to cause grievous bodily harm → death.", exp: "Commonwealth v. Malone (Russian roulette): gross recklessness where death is reasonably anticipated = malice." },
+  { cat: "Homicide", q: "What does the MPC do with premeditation and deliberation?", a: "Abandons them entirely. Intentional killing = murder. Sentencing based on aggravating factors.", exp: "MPC views premeditation as unreliable and artificial. Mental states matter; timing does not." },
+  { cat: "Homicide", q: "Under Girouard (majority), what counts as adequate provocation?", a: "Only recognized categories: extreme assault/battery, mutual combat, illegal arrest, injury to close relative, sudden discovery of adultery. Words alone are NOT enough.", exp: "Maher (minority): ANYTHING naturally tending to produce heat of passion in ordinary men → jury decides." },
+  { cat: "Homicide", q: "State the Girouard (majority) framework for provocation.", a: "1) Legally sufficient? (judge gatekeeps), 2) Would RP be provoked? (objective), 3) Would RP cool off? (objective), 4) Did D cool off? (subjective).", exp: "Maher adds a subjective step: (2) Was D actually provoked? And sends everything to the jury." },
+  { cat: "Homicide", q: "What are the three reasonable person standards for provocation?", a: "Objective (jury common sense), Subjective (all D's characteristics), Hybrid/MPC EED (reasonable person in actor's situation as he believes it).", exp: "MPC EED = extreme emotional disturbance, reasonable explanation from viewpoint of person in actor's situation." },
+  { cat: "Homicide", q: "What distinguishes involuntary manslaughter from civil negligence (Welansky)?", a: "Wanton/reckless conduct is a difference in kind—grave danger apparent, D chose to run the risk.", exp: "Cocoanut Grove nightclub fire. Not just 'gross negligence'—it's about the degree of risk and voluntariness of taking it." },
+  { cat: "Homicide", q: "In State v. Williams (1971), what standard was used for manslaughter?", a: "Ordinary negligence—the caution of a man of reasonable prudence. (Washington repealed this standard in 1975.)", exp: "Parents feared welfare would take child. Duty activated when a reasonable person would call a physician." },
+
+  // ── FELONY MURDER ──
+  { cat: "Felony Murder", q: "State the felony-murder formula.", a: "Felony (F) + Unintentional Killing (UK) = Felony Murder (FM). Mens rea transfers from the felony.", exp: "Easier for prosecutors than 2M: transferred intent + higher punishment. No need to prove intent to kill." },
+  { cat: "Felony Murder", q: "What is BREAKRSS?", a: "Burglary, Robbery, Escape, Arson, Kidnapping, Rape, Sodomy, Serious Sex Crimes—inherently dangerous felonies for FM.", exp: "~50% of jurisdictions specify which felonies in the statute; ~50% require inherently dangerous felonies." },
+  { cat: "Felony Murder", q: "Explain the merger doctrine.", a: "A felony integral to the homicide (assault) merges and CANNOT support FM. A felony with an independent felonious purpose (robbery) does NOT merge.", exp: "Burton: armed robbery has independent purpose (obtaining property) → no merger. Ireland: ADW → merges." },
+  { cat: "Felony Murder", q: "What is the agency limitation (State v. Canola)?", a: "Felony murder liability only when killing is committed by the felon or co-felon in furtherance (~75% of states).", exp: "Agency (majority): only killings BY felons count. Proximate cause (minority): any foreseeable death counts." },
+  { cat: "Felony Murder", q: "Why was the felony-murder instruction improper in People v. Phillips (1966)?", a: "Grand theft (medical fraud) is NOT inherently dangerous to human life. On remand: convicted of 2M (conscious disregard).", exp: "California tests dangerousness 'in the abstract'—can the felony be committed in a non-dangerous way?" },
+  { cat: "Felony Murder", q: "Name the felony-murder limitations from class.", a: "1) Inherently dangerous/BREAKRSS, 2) Independent felonious purpose (merger), 3) Agency (~75%), 4) Proximate cause, 5) Time period, 6) Furthering the crime, 7) Death not of co-felon, 8) Affirmative defenses.", exp: "Don't use 'malice' or 'malice aforethought'—use premeditation and deliberation." },
+
+  // ── ATTEMPT ──
+  { cat: "Attempt", q: "What is the mens rea for attempt?", a: "Specific intent (purpose) to commit the underlying crime—even if the completed crime only requires recklessness.", exp: "You cannot 'attempt' to be reckless. No attempted involuntary manslaughter. No attempted felony murder (most states)." },
+  { cat: "Attempt", q: "What was the holding in People v. Rizzo (1927)?", a: "NOT attempt. D drove around looking for victim but never found him—acts did not 'come or advance very near' to accomplishment.", exp: "Proximity test: how close did D come to completing the crime? Rizzo was too far from completion." },
+  { cat: "Attempt", q: "What is the MPC substantial step test (United States v. Jackson)?", a: "Act must be a substantial step strongly corroborative of criminal intent. Reconnaissance + criminal tools can suffice.", exp: "Jackson: cased a bank with loaded shotguns, masks, handcuffs. Both June 14 and June 21 constituted substantial steps." },
+  { cat: "Attempt", q: "When is abandonment a valid defense to attempt?", a: "Under MPC: voluntary and complete renunciation—must be for the right reasons (change of heart). NOT voluntary if due to fear of detection or difficulty.", exp: "Gilbert chiseled wall, found steel rods, gave up = NOT voluntary. Must abandon for moral reasons, not practical ones." },
+  { cat: "Attempt", q: "What is the holding in Smallwood v. State (1996)?", a: "HIV-positive D having unprotected sex ≠ attempted murder. Knowledge of risk ≠ intent to kill. Must show specific intent.", exp: "Intent to kill may be inferred from circumstances, but magnitude of risk alone is insufficient without specific action demonstrating intent." },
+
+  // ── IMPOSSIBILITY ──
+  { cat: "Impossibility", q: "Distinguish the three types of impossibility.", a: "Pure legal: no crime on the books (always good defense). Pure factual: external circumstances prevent completion (bad defense). Mixed F/L: most contested.", exp: "MPC abolishes impossibility defense for factual and mixed F/L. Pure legal impossibility remains a defense everywhere." },
+  { cat: "Impossibility", q: "What was the holding in People v. Jaffe (1906)?", a: "Reversed—court classified as legal impossibility (cloth no longer stolen). Prof. Robbins says it's actually mixed F/L impossibility.", exp: "D tried to buy cloth he thought was stolen, but it had been restored to owners. Under MPC: would be convicted." },
+  { cat: "Impossibility", q: "What did People v. Dlugash (1977) hold?", a: "Under NY's MPC-based statute (§110.10), D convicted of attempted murder for shooting someone who may already have been dead.", exp: "Impossibility is no defense if the crime could have been committed had circumstances been as D believed them to be." },
+  { cat: "Impossibility", q: "What is the Oviedo middle-ground approach?", a: "Rejects legal/factual distinction. New test: objective acts must independently mark the conduct as criminal in nature.", exp: "D sold procaine (not heroin) claiming it was heroin. Reversed—transferring a non-narcotic is consistent with non-criminal enterprise." },
+  { cat: "Impossibility", q: "Explain the Lady Eldon hypothetical.", a: "Lady Eldon buys lace she believes is dutiable French lace, hides it to smuggle. It's actually cheap English lace. Under MPC: guilty of attempt.", exp: "True legal impossibility would be if the duty was repealed—then there is genuinely no crime to attempt. That IS a defense." },
+
+  // ── SOLICITATION ──
+  { cat: "Solicitation", q: "How does Davis (reversed) differ from Church (affirmed)?", a: "Davis: solicitation + preparation = NOT attempt. Church: did 'everything he could possibly have done' = substantial step = attempt.", exp: "Davis paid $600, gave plans/photos. Church paid, gave maps, photos, approved weapon, planned alibi—went further." },
+
+  // ── COMPLICITY ──
+  { cat: "Complicity", q: "What are the elements of accomplice liability?", a: "MR: intent that the crime be committed. AR: aiding, abetting, helping, facilitating. Requires a completed or attempted crime.", exp: "Unlike conspiracy, accomplice liability requires a completed or attempted crime. Unlike complicity, conspiracy requires an agreement." },
+  { cat: "Complicity", q: "What are the four elements of accessory after the fact?", a: "1) Assist a person who committed the crime, 2) After the crime, 3) With knowledge, 4) With intent to help avoid arrest/punishment.", exp: "Accessory after the fact carries lesser punishment than the principal crime. It's the only common law category that retains distinct treatment." },
+  { cat: "Complicity", q: "What does accomplice liability require that conspiracy doesn't, and vice versa?", a: "Accomplice requires a completed/attempted crime. Conspiracy requires an agreement.", exp: "Both provide vicarious liability. Conspiracy reaches further in time and doesn't require a completed crime." },
+
+  // ── CONSPIRACY ──
+  { cat: "Conspiracy", q: "Define conspiracy and its elements.", a: "Agreement between 2+ people to commit a crime. MR: intent to agree that target crime be committed. AR: agreement + overt act.", exp: "Justice Holmes: 'A conspiracy is a partnership in criminal purposes.' For exam: always require an overt act." },
+  { cat: "Conspiracy", q: "What are the four aspects of conspiracy that give prosecutors power?", a: "1) Reaches further in time (inchoate), 2) Does not merge (double punishment), 3) Far-reaching vicarious liability (Pinkerton), 4) Procedural advantages (hearsay, joinder, venue).", exp: "Unlike attempt, conspiracy does not merge—D can be convicted of BOTH conspiracy AND the target crime." },
+  { cat: "Conspiracy", q: "State the Pinkerton doctrine.", a: "A co-conspirator is vicariously liable for substantive crimes committed by fellow conspirators in furtherance, even without direct participation, if reasonably foreseeable.", exp: "Daniel Pinkerton was in prison when brother Walter committed the offenses. Still liable. MPC rejects Pinkerton." },
+  { cat: "Conspiracy", q: "Under People v. Lauria, when can intent be inferred from a supplier's knowledge?", a: "1) Stake in the venture, 2) No legitimate use exists, 3) Disproportionate volume. For aggravated felonies, knowledge alone may suffice.", exp: "Lauria ran a phone service knowing some clients were prostitutes. Not conspiracy—prostitution is a misdemeanor, legitimate uses exist, no inflated charges." },
+  { cat: "Conspiracy", q: "What is the two-part test for single vs. multiple conspiracies?", a: "1) Each spoke/link knows other spokes/links exist (not necessarily their identity), AND 2) They have and realize a community of interest.", exp: "Kotteakos (hub-and-spoke): no rim connecting spokes = multiple conspiracies. Bruno (chain): each link depends on the whole = one conspiracy." },
+  { cat: "Conspiracy", q: "In Kotteakos, why were there multiple conspiracies?", a: "No 'rim' connecting the spokes. Borrowers had no connection to each other—only shared Simon Brown as a common broker (hub).", exp: "Multiple separate conspiracies sharing a common hub do NOT automatically become one. Error to try everyone together." },
+  { cat: "Conspiracy", q: "In United States v. Bruno, why was it one conspiracy?", a: "Each participant at one end of the narcotics chain knew the business would not stop with their buyers, and success of each part depended on the whole.", exp: "Smugglers → middlemen → retailers. All 'embarked upon a venture in which each was a participant' in the whole enterprise." },
+  { cat: "Conspiracy", q: "Explain unilateral vs. bilateral conspiracy (Garcia v. State).", a: "Bilateral (traditional): requires genuine meeting of minds—no conspiracy with faking informant. Unilateral (MPC): focuses on D's own culpability—CAN convict even if co-conspirator was faking.", exp: "Garcia hired someone to kill her husband. The 'hit man' was undercover. Under MPC-based statute: convicted." },
+  { cat: "Conspiracy", q: "What is Wharton's Rule?", a: "Where a crime inherently requires 2+ people (adultery, bribery, incest, bigamy), conspiracy cannot be charged if only the minimum number participated.", exp: "Exception: more than the minimum number → can charge conspiracy. MPC rejects Wharton's Rule." },
+  { cat: "Conspiracy", q: "When does conspiracy end?", a: "Crime committed, statute of limitations runs (5 years from last overt act), or withdrawal (voluntary + complete + inform all co-conspirators).", exp: "Withdrawal must be voluntary and complete, AND D must inform all other co-conspirators." },
+  { cat: "Conspiracy", q: "What did United States v. Feola hold about knowledge of victim's status?", a: "Government need NOT prove D knew victim was a federal officer—for either the substantive offense or conspiracy. You take the victim as you find them.", exp: "Exception to general rule that conspiracy requires intent: strict liability for federal officer status." },
+
+  // ── SELF-DEFENSE ──
+  { cat: "Self-Defense", q: "List the five elements of self-defense.", a: "1) Resisting present/imminent unlawful force, 2) No more force than reasonably necessary, 3) Deadly force only if deadly danger, 4) Not initial aggressor (with exceptions), 5) Duty to retreat (some jurisdictions).", exp: "Some jurisdictions eliminate #5 (Stand Your Ground) and even #2 (subjective standard)." },
+  { cat: "Self-Defense", q: "What is imperfect self-defense?", a: "D honestly but unreasonably believed force was necessary → conviction for a lesser crime (e.g., voluntary manslaughter instead of murder).", exp: "A compromise: D gets partial credit for genuine belief, but it wasn't objectively reasonable." },
+  { cat: "Self-Defense", q: "What was the holding in State v. Norman (1989)?", a: "Battered woman who killed sleeping husband NOT entitled to self-defense instruction—no imminent threat while he was asleep.", exp: "Majority: fears about what a sleeping husband might do = indefinite future harm. Dissent: for a battered wife with no escape, the next attack IS imminent." },
+  { cat: "Self-Defense", q: "How does the MPC approach imminence differently?", a: "Uses 'immediately necessary' instead of 'imminent'—shifts from when the threat materializes to whether the response was needed now.", exp: "Under MPC §3.04(1), Maria's case (battered woman) is substantially stronger. More favorable to BWS claims." },
+  { cat: "Self-Defense", q: "What are the three approaches to the reasonableness standard in BWS cases?", a: "Objective (Humphrey): reasonable person, BWS informs perspective. Middle (Edwards): reasonable person WITH BSW. Subjective (Leidholm): D's own impressions tested for reasonableness.", exp: "Most courts use the objective end but allow BWS evidence to explain the defendant's perspective." },
+
+  // ── NECESSITY ──
+  { cat: "Necessity", q: "What are the four elements of the necessity defense?", a: "1) Harm avoided > harm committed, 2) No legal alternatives, 3) Imminent harm (not speculative), 4) Situation not caused by D's recklessness.", exp: "Cannot take life of an innocent person under necessity. Rarely successful. Examples: emergency medication, medical marijuana." },
+  { cat: "Necessity", q: "Why is necessity unavailable for indirect civil disobedience (Schoon)?", a: "Three elements can NEVER be met: 1) No imminent harm from a law's existence, 2) No causal nexus (requires Congress to act), 3) Legal alternatives always exist (petition Congress).", exp: "Categorical rule: necessity is NEVER available for indirect civil disobedience (protesting a policy by violating a different law)." },
+
+  // ── DURESS ──
+  { cat: "Duress", q: "Distinguish necessity from duress.", a: "Necessity = justification (lesser evil, any source). Duress = excuse (understandable choice, source must be another person's threat).", exp: "Under MPC, D can claim duress even if he did NOT choose the lesser evil—as long as person of reasonable firmness would have succumbed." },
+  { cat: "Duress", q: "What is the MPC duress standard (Toscano)?", a: "D was coerced by force or threat that a person of reasonable firmness in his situation would have been unable to resist.", exp: "Eliminates requirements that threat be death/serious harm, immediate, or aimed at D. These become evidentiary factors." },
+  { cat: "Duress", q: "Is duress a defense to murder?", a: "Common law: No. MPC: Yes (complete defense). NJ (Toscano): Middle position—reduces murder to manslaughter.", exp: "Three different approaches depending on jurisdiction." },
+
+  // ── INTOXICATION ──
+  { cat: "Intoxication", q: "Voluntary intoxication is a defense to which type of crime?", a: "Specific intent crimes ONLY. Inadmissible for general intent crimes.", exp: "Hood: assault while drunk is MORE likely, not less. Anomalous to allow intoxication to relieve responsibility for crimes frequently committed drunk." },
+  { cat: "Intoxication", q: "State the intoxication defense chart.", a: "Voluntary intoxication: ✓ specific intent, ✗ general intent. Involuntary intoxication: ✓ both.", exp: "Involuntary intoxication (fraud, mistake, force) is always a defense. Voluntary only negates specific intent." },
+  { cat: "Intoxication", q: "What is the MPC 'recklessness equation' (§2.08(2))?", a: "Getting drunk = the functional equivalent of consciously disregarding a risk. Unawareness due to voluntary intoxication is immaterial for recklessness.", exp: "Critics: this confuses the minor culpability of getting drunk with the serious culpability of rape or murder." },
+  { cat: "Intoxication", q: "What is the 'prior intent' doctrine?", a: "If D had intent BEFORE getting drunk and drank to reduce inhibitions → prior intent transfers to the actus reus. No intoxication defense.", exp: "E.g., planning a crime sober, then getting drunk for 'liquid courage'—prior intent transfers." },
+
+  // ── INSANITY ──
+  { cat: "Insanity", q: "State the M'Naghten Rule.", a: "Defect of reason, from disease of the mind, such that D (1) did not know the nature/quality of the act, OR (2) did not know it was wrong.", exp: "Cognitive only—no volitional prong. Strictest test. 'Wrong' can mean criminality (strict) or wrongfulness (loose)." },
+  { cat: "Insanity", q: "What does the Irresistible Impulse test add to M'Naghten?", a: "Adds a volitional element: the power to control one's actions. D may know the act is wrong but cannot control himself.", exp: "Question: complete loss of control (strict) or less-than-complete (loose)?" },
+  { cat: "Insanity", q: "What is the Durham (product) test?", a: "Was the act a 'product of' the mental disease? Even a slight mental disorder suffices.", exp: "Easiest to defend under. Only used in 3 courts (DC overruled, Maine abandoned, NH still has it)." },
+  { cat: "Insanity", q: "State the MPC/ALI insanity test (§4.01).", a: "Not responsible if, due to mental disease/defect, D lacks SUBSTANTIAL CAPACITY either to APPRECIATE criminality/wrongfulness OR to CONFORM conduct to law.", exp: "Key innovations: 'substantial capacity' (not total), 'appreciate' (not just 'know'), includes volitional prong, excludes antisocial conduct alone." },
+  { cat: "Insanity", q: "What happened after John Hinckley's 1982 acquittal?", a: "Burden shifted to defendant, many states returned to M'Naghten, 'guilty but mentally ill' introduced, some states abolished the defense (ID, KS, MT, NV, UT).", exp: "Federal law (18 U.S.C. §17(a)) = basically M'Naghten with burden on D. Must prove 'unable to appreciate' due to 'severe' mental disease." },
+  { cat: "Insanity", q: "If D successfully proves insanity, what is the result?", a: "Found 'not guilty by reason of insanity'—sent to a state hospital for the criminally insane (not acquitted, not convicted).", exp: "D remains hospitalized until competent. Not a 'get out of jail free' card." },
+  { cat: "Insanity", q: "Name the arguments for and against abolishing the insanity defense.", a: "FOR: 'sick vs. bad' is an illusion (Weintraub), rarely used (Morris), no valid line. AGAINST: moral judgment requires distinction (Wechsler), due process, legitimacy of criminal law depends on culpability.", exp: "Possible policy exam question. ~0.25% of felony prosecutions use the insanity defense." },
+
+  // ── ISSUE SPOTTING ──
+  { cat: "Issue Spotting", q: "D agrees to rob a bank unarmed with co-conspirators. One secretly brings a gun and kills a teller. Is D liable for murder under Pinkerton?", a: "Possibly—if the killing was reasonably foreseeable given the nature of the conspiracy. D may argue the affirmative defense (not armed, no reason to believe others were).", exp: "Pinkerton: liable if (1) conspiracy ongoing, (2) offense in furtherance, (3) reasonably foreseeable. Check affirmative defense elements." },
+  { cat: "Issue Spotting", q: "D counts to five and shoots V. D claims no premeditation. What degree of murder?", a: "Under Carroll (PA): 1st degree—premeditation formed in moments, D's countdown shows conscious decision. Under Anderson (CA): analyze planning, motive, manner.", exp: "Under Carroll, seconds are enough. D's own words are evidence of premeditation and deliberation." },
+  { cat: "Issue Spotting", q: "A supplier knows 3 of her 50 clients use her legal service for drug dealing (a felony). Conspiracy?", a: "Apply Lauria: stake in venture? no legitimate use? disproportionate volume? For serious felonies, knowledge alone may suffice. But here legitimate uses exist.", exp: "Key exam issue from Prof. Robbins. 40% of a previous exam was a supplier-with-knowledge issue like Lauria." },
+  { cat: "Issue Spotting", q: "A battered woman shoots her sleeping abuser after he threatened to kill her 'tomorrow.' Best defense?", a: "Traditional: imperfect self-defense → VM. Under MPC: argue 'immediately necessary.' BWS evidence to contextualize. Imperfect self-defense as fallback.", exp: "Norman/Sands: strict imminence bars perfect self-defense when abuser sleeps. MPC 'immediately necessary' is better." },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const catColors = {
+  "Foundations":"#6366f1","Actus Reus":"#f97316","Mens Rea":"#a855f7","Mistakes":"#14b8a6",
+  "Strict Liability":"#ef4444","Legality":"#eab308","Homicide":"#dc2626","Felony Murder":"#ea580c",
+  "Attempt":"#3b82f6","Impossibility":"#8b5cf6","Solicitation":"#0d9488","Complicity":"#22c55e",
+  "Conspiracy":"#64748b","Self-Defense":"#06b6d4","Necessity":"#475569","Duress":"#78716c",
+  "Intoxication":"#a3a3a3","Insanity":"#7c3aed","Issue Spotting":"#2563eb"
+};
+
+const allCategories = [...new Set(cards.map(c => c.cat))];
+let selectedCats = new Set(allCategories);
+let mode = "shuffle";
+let deck = [];
+let idx = 0;
+let flipped = false;
+let gotCount = 0;
+let missedCount = 0;
+let skippedCount = 0;
+let missedCards = [];
+let timerInterval = null;
+let seconds = 0;
+
+// ═══════════════════════════════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════════════════════════════
+function showScreen(name) {
+  document.getElementById("menuScreen").classList.toggle("hidden", name !== "menu");
+  document.getElementById("settingsScreen").classList.toggle("hidden", name !== "settings");
+  document.getElementById("gameScreen").classList.toggle("hidden", name !== "game");
+  document.getElementById("resultsScreen").classList.toggle("hidden", name !== "results");
+  if (name === "settings") renderSettings();
+  if (name === "menu") renderMenu();
+}
+
+function renderMenu() {
+  document.getElementById("totalCount").textContent = cards.length;
+  document.getElementById("topicCount").textContent = allCategories.length;
+}
+
+function renderSettings() {
+  const grid = document.getElementById("catGrid");
+  grid.innerHTML = "";
+  allCategories.forEach(cat => {
+    const count = cards.filter(c => c.cat === cat).length;
+    const chip = document.createElement("button");
+    chip.className = "cat-chip" + (selectedCats.has(cat) ? " active" : "");
+    chip.textContent = cat + " (" + count + ")";
+    if (selectedCats.has(cat)) chip.style.background = catColors[cat] || "#ec4899";
+    chip.onclick = () => { toggleCat(cat); renderSettings(); };
+    grid.appendChild(chip);
+  });
+  const pool = cards.filter(c => selectedCats.has(c.cat));
+  document.getElementById("startBtn").textContent = "Start (" + pool.length + " cards)";
+  document.getElementById("startBtn").disabled = pool.length === 0;
+}
+
+function selectAllCats() { selectedCats = new Set(allCategories); renderSettings(); }
+function selectNoCats() { selectedCats = new Set(); renderSettings(); }
+function toggleCat(cat) { selectedCats.has(cat) ? selectedCats.delete(cat) : selectedCats.add(cat); }
+
+function setMode(m) {
+  mode = m;
+  document.getElementById("modeShuf").classList.toggle("active", m === "shuffle");
+  document.getElementById("modeSeq").classList.toggle("active", m === "sequential");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME
+// ═══════════════════════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  deck = cards.filter(c => selectedCats.has(c.cat));
+  if (mode === "shuffle") deck = shuffle(deck);
+  idx = 0; flipped = false; gotCount = 0; missedCount = 0; skippedCount = 0; missedCards = []; seconds = 0;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => { seconds++; document.getElementById("gameTimer").textContent = formatTime(seconds); }, 1000);
+  showScreen("game");
+  renderCard();
+}
+
+function reviewMissed() {
+  if (missedCards.length === 0) return;
+  deck = shuffle([...missedCards]);
+  idx = 0; flipped = false; gotCount = 0; missedCount = 0; skippedCount = 0; missedCards = []; seconds = 0;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => { seconds++; document.getElementById("gameTimer").textContent = formatTime(seconds); }, 1000);
+  showScreen("game");
+  renderCard();
+}
+
+function renderCard() {
+  if (idx >= deck.length) return endGame();
+  const card = deck[idx];
+  document.getElementById("gameCatBadge").textContent = card.cat;
+  document.getElementById("gameCatBadge").style.background = catColors[card.cat] || "#ec4899";
+  document.getElementById("gameScore").textContent = gotCount + "/" + (gotCount + missedCount);
+  document.getElementById("qNumber").textContent = "Card " + (idx + 1) + " of " + deck.length;
+  document.getElementById("progressFill").style.width = ((idx / deck.length) * 100) + "%";
+  document.getElementById("cardQuestion").textContent = card.q;
+  document.getElementById("cardAnswer").textContent = card.a;
+  document.getElementById("cardExplanation").textContent = card.exp;
+  document.getElementById("flashcardInner").classList.remove("flipped");
+  document.getElementById("gradeRow").classList.add("hidden");
+  flipped = false;
+}
+
+function flipCard() {
+  if (flipped) return;
+  flipped = true;
+  document.getElementById("flashcardInner").classList.add("flipped");
+  document.getElementById("gradeRow").classList.remove("hidden");
+  document.getElementById("gradeRow").classList.add("fade-up");
+}
+
+function gradeCard(grade) {
+  if (grade === "got") gotCount++;
+  else if (grade === "missed") { missedCount++; missedCards.push(deck[idx]); }
+  else skippedCount++;
+  idx++;
+  renderCard();
+}
+
+function endGame() {
+  if (timerInterval) clearInterval(timerInterval);
+  const total = gotCount + missedCount;
+  const pct = total > 0 ? Math.round((gotCount / total) * 100) : 0;
+  const gradeColor = pct >= 90 ? "#22c55e" : pct >= 80 ? "#4ade80" : pct >= 70 ? "#eab308" : pct >= 60 ? "#f97316" : "#ef4444";
+
+  document.getElementById("resultsStats").innerHTML = `
+    <div class="result-box"><div class="result-num" style="color:${gradeColor}">${pct}%</div><div class="result-label">${gotCount}/${total} correct</div></div>
+    <div class="result-box"><div class="result-num" style="color:#ec4899">${formatTime(seconds)}</div><div class="result-label">Time</div></div>
+    <div class="result-box"><div class="result-num" style="color:#6e7681">${skippedCount}</div><div class="result-label">Skipped</div></div>
+  `;
+
+  const sec = document.getElementById("missedSection");
+  const btn = document.getElementById("reviewMissedBtn");
+  if (missedCards.length > 0) {
+    btn.style.display = "";
+    sec.innerHTML = `<div class="missed-title">Review Missed (${missedCards.length})</div>` +
+      missedCards.map(c => `<div class="missed-card"><div class="missed-q">${c.q}</div><div class="missed-a">${c.a}</div><div class="missed-exp">${c.exp}</div></div>`).join("");
+  } else {
+    btn.style.display = "none";
+    sec.innerHTML = `<div style="text-align:center;color:#22c55e;font-size:18px;margin:20px 0;">Perfect score — you know your stuff.</div>`;
+  }
+  showScreen("results");
+}
+
+function formatTime(s) { return Math.floor(s / 60) + ":" + (s % 60).toString().padStart(2, "0"); }
+
+// ── INIT ──
+renderMenu();
+</script>
+</body>
+</html>
