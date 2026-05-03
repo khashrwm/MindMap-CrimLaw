@@ -698,11 +698,12 @@
       <div class="flashcard-inner" id="flashcardInner">
         <div class="card-front">
           <div class="card-front-question" id="cardQuestion"></div>
-          <div class="card-front-hint">tap to reveal answer</div>
+          <div class="card-front-hint">tap to flip</div>
         </div>
         <div class="card-back">
           <div class="card-back-answer" id="cardAnswer"></div>
           <div class="card-back-explanation" id="cardExplanation"></div>
+          <div style="margin-top:16px;color:#6e7681;font-size:12px;font-family:'JetBrains Mono',monospace;text-align:center;">tap to flip back</div>
         </div>
       </div>
     </div>
@@ -723,7 +724,8 @@
     <div class="missed-section" id="missedSection"></div>
     <div class="results-actions">
       <button class="btn-back" onclick="showScreen('menu')">Menu</button>
-      <button class="btn-start" onclick="reviewMissed()" id="reviewMissedBtn" style="flex:none;padding:14px 28px;">Review Missed</button>
+      <button class="btn-start" onclick="goBackToMissed()" id="goBackMissedBtn" style="flex:none;padding:14px 28px;background:#ef4444;">Go Back to Missed</button>
+      <button class="btn-start" onclick="reviewMissed()" id="reviewMissedBtn" style="flex:none;padding:14px 28px;">New Deck: Missed Only</button>
       <button class="btn-start" onclick="startGame()" style="flex:none;padding:14px 28px;">Play Again</button>
     </div>
   </div>
@@ -1061,11 +1063,14 @@ function renderCard() {
 }
 
 function flipCard() {
-  if (flipped) return;
-  flipped = true;
-  document.getElementById("flashcardInner").classList.add("flipped");
-  document.getElementById("gradeRow").classList.remove("hidden");
-  document.getElementById("gradeRow").classList.add("fade-up");
+  flipped = !flipped;
+  document.getElementById("flashcardInner").classList.toggle("flipped", flipped);
+  if (flipped) {
+    document.getElementById("gradeRow").classList.remove("hidden");
+    document.getElementById("gradeRow").classList.add("fade-up");
+  } else {
+    document.getElementById("gradeRow").classList.add("hidden");
+  }
 }
 
 function gradeCard(grade) {
@@ -1114,17 +1119,48 @@ function endGame() {
 
   const sec = document.getElementById("missedSection");
   const btn = document.getElementById("reviewMissedBtn");
+  const backBtn = document.getElementById("goBackMissedBtn");
   if (missedCards.length > 0) {
     btn.style.display = "";
-    sec.innerHTML = `<div class="missed-title">Review Missed (${missedCards.length})</div>` +
-      missedCards.map(c => `<div class="missed-card"><div class="missed-q">${c.q}</div><div class="missed-a">${c.a}</div><div class="missed-exp">${c.exp}</div></div>`).join("");
+    backBtn.style.display = "";
+    // Build missed cards with click-to-jump — find their original index in deck
+    const missedIndices = [];
+    grades.forEach((g, i) => { if (g === 'missed') missedIndices.push(i); });
+    sec.innerHTML = `<div class="missed-title">Review Missed (${missedCards.length}) — click any card to jump back</div>` +
+      missedIndices.map(deckIdx => {
+        const c = deck[deckIdx];
+        return `<div class="missed-card" onclick="jumpBackToCard(${deckIdx})" style="cursor:pointer;" onmouseover="this.style.borderColor='#ef4444'" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'">
+          <div class="missed-q">${c.q}</div>
+          <div class="missed-a">${c.a}</div>
+          <div class="missed-exp">${c.exp}</div>
+          <div style="margin-top:8px;font-size:11px;color:#6e7681;font-family:'JetBrains Mono',monospace;">Card ${deckIdx + 1} · tap to go back →</div>
+        </div>`;
+      }).join("");
   } else {
     btn.style.display = "none";
+    backBtn.style.display = "none";
     sec.innerHTML = total === 0
       ? `<div style="text-align:center;color:#8b949e;font-size:16px;margin:20px 0;">No cards graded yet.</div>`
       : `<div style="text-align:center;color:#22c55e;font-size:18px;margin:20px 0;">Perfect score — you know your stuff.</div>`;
   }
   showScreen("results");
+}
+
+// Jump back into the SAME deck at a specific card (from results screen)
+function jumpBackToCard(deckIdx) {
+  idx = deckIdx;
+  // restart timer
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => { seconds++; document.getElementById("gameTimer").textContent = formatTime(seconds); }, 1000);
+  showScreen("game");
+  renderCard();
+}
+
+// Jump to first missed card in the current deck
+function goBackToMissed() {
+  const firstMissed = grades.findIndex(g => g === 'missed');
+  if (firstMissed === -1) return;
+  jumpBackToCard(firstMissed);
 }
 
 function formatTime(s) { return Math.floor(s / 60) + ":" + (s % 60).toString().padStart(2, "0"); }
