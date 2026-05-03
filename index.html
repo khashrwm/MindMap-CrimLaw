@@ -489,6 +489,128 @@
     justify-content: center;
   }
 
+  /* ── NAV BAR (back/forward) ── */
+  .nav-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #8b949e;
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .nav-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.08);
+    color: #e6edf3;
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .nav-btn.end-session {
+    margin-left: auto;
+    color: #ef4444;
+    border-color: rgba(239,68,68,0.2);
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  /* ── DOT NAVIGATION ── */
+  .dot-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    max-height: 52px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .dot-nav.expanded {
+    max-height: none;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+
+  .dot.current {
+    border-color: #ec4899;
+    background: #ec4899;
+    box-shadow: 0 0 6px rgba(236,72,153,0.4);
+    transform: scale(1.3);
+  }
+
+  .dot.got {
+    background: #22c55e;
+    border-color: #22c55e;
+  }
+
+  .dot.missed {
+    background: #ef4444;
+    border-color: #ef4444;
+  }
+
+  .dot.skipped {
+    background: #6e7681;
+    border-color: #6e7681;
+  }
+
+  .dot:hover {
+    transform: scale(1.4);
+  }
+
+  .dot-toggle {
+    font-size: 11px;
+    color: #6e7681;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    background: none;
+    border: none;
+    padding: 2px 0;
+    margin-bottom: 8px;
+  }
+
+  .dot-toggle:hover {
+    color: #ec4899;
+  }
+
+  /* ── CARD STATUS INDICATOR ── */
+  .card-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+  }
+
+  .card-status.got { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .card-status.missed-status { background: rgba(239,68,68,0.12); color: #ef4444; }
+  .card-status.skipped-status { background: rgba(110,118,129,0.15); color: #6e7681; }
+
   .hidden { display: none !important; }
 
   @keyframes fadeUp {
@@ -554,8 +676,23 @@
         <span id="gameTimer">0:00</span>
       </div>
     </div>
+
+    <!-- Nav bar: back / forward / end -->
+    <div class="nav-row">
+      <button class="nav-btn" id="prevBtn" onclick="goBack()" disabled>← Back</button>
+      <button class="nav-btn" id="nextBtn" onclick="goForward()" disabled>Next →</button>
+      <button class="nav-btn end-session" onclick="endGame()">End Session</button>
+    </div>
+
+    <!-- Dot navigation -->
+    <div class="dot-nav" id="dotNav"></div>
+    <button class="dot-toggle hidden" id="dotToggle" onclick="toggleDots()">show all cards ▾</button>
+
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="q-number" id="qNumber"></div>
+    <div style="display:flex;align-items:center;margin-bottom:8px;">
+      <span class="q-number" id="qNumber"></span>
+      <span class="card-status hidden" id="cardStatus"></span>
+    </div>
 
     <div class="flashcard" id="flashcard" onclick="flipCard()">
       <div class="flashcard-inner" id="flashcardInner">
@@ -754,6 +891,9 @@ let skippedCount = 0;
 let missedCards = [];
 let timerInterval = null;
 let seconds = 0;
+let grades = []; // per-card: null | 'got' | 'missed' | 'skip'
+let highestReached = 0; // furthest card graded
+let dotsExpanded = false;
 
 // ═══════════════════════════════════════════════════════════════
 // SCREENS
@@ -815,6 +955,9 @@ function startGame() {
   deck = cards.filter(c => selectedCats.has(c.cat));
   if (mode === "shuffle") deck = shuffle(deck);
   idx = 0; flipped = false; gotCount = 0; missedCount = 0; skippedCount = 0; missedCards = []; seconds = 0;
+  grades = new Array(deck.length).fill(null);
+  highestReached = 0;
+  dotsExpanded = false;
   if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(() => { seconds++; document.getElementById("gameTimer").textContent = formatTime(seconds); }, 1000);
   showScreen("game");
@@ -825,10 +968,58 @@ function reviewMissed() {
   if (missedCards.length === 0) return;
   deck = shuffle([...missedCards]);
   idx = 0; flipped = false; gotCount = 0; missedCount = 0; skippedCount = 0; missedCards = []; seconds = 0;
+  grades = new Array(deck.length).fill(null);
+  highestReached = 0;
+  dotsExpanded = false;
   if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(() => { seconds++; document.getElementById("gameTimer").textContent = formatTime(seconds); }, 1000);
   showScreen("game");
   renderCard();
+}
+
+function recalcCounts() {
+  gotCount = grades.filter(g => g === 'got').length;
+  missedCount = grades.filter(g => g === 'missed').length;
+  skippedCount = grades.filter(g => g === 'skip').length;
+  missedCards = [];
+  grades.forEach((g, i) => { if (g === 'missed') missedCards.push(deck[i]); });
+}
+
+function renderDots() {
+  const nav = document.getElementById("dotNav");
+  const toggle = document.getElementById("dotToggle");
+  nav.innerHTML = "";
+  deck.forEach((card, i) => {
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    if (i === idx) dot.classList.add("current");
+    if (grades[i] === 'got') dot.classList.add("got");
+    else if (grades[i] === 'missed') dot.classList.add("missed");
+    else if (grades[i] === 'skip') dot.classList.add("skipped");
+    dot.title = `Card ${i+1}: ${card.cat} — ${grades[i] || 'unanswered'}`;
+    dot.onclick = (e) => { e.stopPropagation(); jumpTo(i); };
+    nav.appendChild(dot);
+  });
+  // show toggle if many cards
+  if (deck.length > 30) {
+    toggle.classList.remove("hidden");
+    toggle.textContent = dotsExpanded ? "collapse ▴" : `show all ${deck.length} cards ▾`;
+    nav.classList.toggle("expanded", dotsExpanded);
+  } else {
+    toggle.classList.add("hidden");
+    nav.classList.add("expanded");
+  }
+}
+
+function toggleDots() {
+  dotsExpanded = !dotsExpanded;
+  renderDots();
+}
+
+function updateNavButtons() {
+  document.getElementById("prevBtn").disabled = idx <= 0;
+  // allow forward only to cards already visited
+  document.getElementById("nextBtn").disabled = idx >= highestReached && (grades[idx] === null);
 }
 
 function renderCard() {
@@ -836,15 +1027,37 @@ function renderCard() {
   const card = deck[idx];
   document.getElementById("gameCatBadge").textContent = card.cat;
   document.getElementById("gameCatBadge").style.background = catColors[card.cat] || "#ec4899";
+  recalcCounts();
   document.getElementById("gameScore").textContent = gotCount + "/" + (gotCount + missedCount);
   document.getElementById("qNumber").textContent = "Card " + (idx + 1) + " of " + deck.length;
-  document.getElementById("progressFill").style.width = ((idx / deck.length) * 100) + "%";
+  const answered = grades.filter(g => g !== null).length;
+  document.getElementById("progressFill").style.width = ((answered / deck.length) * 100) + "%";
   document.getElementById("cardQuestion").textContent = card.q;
   document.getElementById("cardAnswer").textContent = card.a;
   document.getElementById("cardExplanation").textContent = card.exp;
-  document.getElementById("flashcardInner").classList.remove("flipped");
-  document.getElementById("gradeRow").classList.add("hidden");
-  flipped = false;
+
+  // If revisiting a graded card, show it flipped with its status
+  const status = document.getElementById("cardStatus");
+  if (grades[idx] !== null) {
+    // show flipped
+    document.getElementById("flashcardInner").classList.add("flipped");
+    flipped = true;
+    document.getElementById("gradeRow").classList.remove("hidden");
+    // show status badge
+    status.classList.remove("hidden", "got", "missed-status", "skipped-status");
+    if (grades[idx] === 'got') { status.textContent = "✓ Got It"; status.classList.add("got"); }
+    else if (grades[idx] === 'missed') { status.textContent = "✗ Missed"; status.classList.add("missed-status"); }
+    else { status.textContent = "— Skipped"; status.classList.add("skipped-status"); }
+  } else {
+    // fresh card
+    document.getElementById("flashcardInner").classList.remove("flipped");
+    flipped = false;
+    document.getElementById("gradeRow").classList.add("hidden");
+    status.classList.add("hidden");
+  }
+
+  renderDots();
+  updateNavButtons();
 }
 
 function flipCard() {
@@ -856,23 +1069,47 @@ function flipCard() {
 }
 
 function gradeCard(grade) {
-  if (grade === "got") gotCount++;
-  else if (grade === "missed") { missedCount++; missedCards.push(deck[idx]); }
-  else skippedCount++;
-  idx++;
+  grades[idx] = grade;
+  if (idx >= highestReached) highestReached = idx + 1;
+  recalcCounts();
+  // auto-advance to next ungraded card
+  let next = idx + 1;
+  while (next < deck.length && grades[next] !== null) next++;
+  if (next >= deck.length) {
+    // check if all graded
+    if (grades.every(g => g !== null)) return endGame();
+    // otherwise just go to next
+    next = idx + 1;
+  }
+  idx = Math.min(next, deck.length);
   renderCard();
+}
+
+function goBack() {
+  if (idx > 0) { idx--; renderCard(); }
+}
+
+function goForward() {
+  if (idx < deck.length - 1) { idx++; renderCard(); }
+}
+
+function jumpTo(i) {
+  if (i >= 0 && i < deck.length) { idx = i; renderCard(); }
 }
 
 function endGame() {
   if (timerInterval) clearInterval(timerInterval);
+  recalcCounts();
   const total = gotCount + missedCount;
   const pct = total > 0 ? Math.round((gotCount / total) * 100) : 0;
   const gradeColor = pct >= 90 ? "#22c55e" : pct >= 80 ? "#4ade80" : pct >= 70 ? "#eab308" : pct >= 60 ? "#f97316" : "#ef4444";
+  const unanswered = grades.filter(g => g === null).length;
 
   document.getElementById("resultsStats").innerHTML = `
     <div class="result-box"><div class="result-num" style="color:${gradeColor}">${pct}%</div><div class="result-label">${gotCount}/${total} correct</div></div>
     <div class="result-box"><div class="result-num" style="color:#ec4899">${formatTime(seconds)}</div><div class="result-label">Time</div></div>
-    <div class="result-box"><div class="result-num" style="color:#6e7681">${skippedCount}</div><div class="result-label">Skipped</div></div>
+    <div class="result-box"><div class="result-num" style="color:#ef4444">${missedCount}</div><div class="result-label">Missed</div></div>
+    <div class="result-box"><div class="result-num" style="color:#6e7681">${skippedCount + unanswered}</div><div class="result-label">Skipped</div></div>
   `;
 
   const sec = document.getElementById("missedSection");
@@ -883,7 +1120,9 @@ function endGame() {
       missedCards.map(c => `<div class="missed-card"><div class="missed-q">${c.q}</div><div class="missed-a">${c.a}</div><div class="missed-exp">${c.exp}</div></div>`).join("");
   } else {
     btn.style.display = "none";
-    sec.innerHTML = `<div style="text-align:center;color:#22c55e;font-size:18px;margin:20px 0;">Perfect score — you know your stuff.</div>`;
+    sec.innerHTML = total === 0
+      ? `<div style="text-align:center;color:#8b949e;font-size:16px;margin:20px 0;">No cards graded yet.</div>`
+      : `<div style="text-align:center;color:#22c55e;font-size:18px;margin:20px 0;">Perfect score — you know your stuff.</div>`;
   }
   showScreen("results");
 }
@@ -892,6 +1131,17 @@ function formatTime(s) { return Math.floor(s / 60) + ":" + (s % 60).toString().p
 
 // ── INIT ──
 renderMenu();
+
+// ── KEYBOARD NAVIGATION ──
+document.addEventListener("keydown", (e) => {
+  if (document.getElementById("gameScreen").classList.contains("hidden")) return;
+  if (e.key === "ArrowLeft") { e.preventDefault(); goBack(); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); goForward(); }
+  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); flipCard(); }
+  else if (flipped && e.key === "1") { e.preventDefault(); gradeCard("got"); }
+  else if (flipped && e.key === "2") { e.preventDefault(); gradeCard("missed"); }
+  else if (flipped && e.key === "3") { e.preventDefault(); gradeCard("skip"); }
+});
 </script>
 </body>
 </html>
